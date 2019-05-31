@@ -15,19 +15,20 @@ The web app "Saikoro" (means dice in Japanese) is based on "D1CE" and released a
 
 ## Usage
 
-### Embed web dice.
+### Open web dice.
 
-Copy and paste the code into the HTML of your website.
-
-```
- <iframe src="https://saikoro.org/d1ce/app.html" width="300" height="300"></iframe>
-```
-
-Or customize query parameters like the code below if use options.
+Redirect to the URL.
 
 ```
- <iframe src="https://saikoro.org/d1ce/app.html?type=2" width="300" height="300"></iframe>
- <iframe src="https://saikoro.org/d1ce/app.html?type=2&seed=100" width="300" height="300"></iframe>
+ https://saikoro.org/
+```
+
+Or customize query parameters like the URL below if use options.
+
+```
+ https://saikoro.org/?app=dot&type=3d6
+ https://saikoro.org/?app=dot&type=2d10&seed=0
+ https://saikoro.org/?app=num&type=3d6&face=1,2m3
 ```
 
 <details>
@@ -38,17 +39,69 @@ See details of options.
 All query parameters are separated by `&` like below.
 
 ```
-?type=2
-?type=2&seed=100
+?app=dot&type=3d6
+?app=num&type=2d10&seed=0
+?app=dot&type=3d6&face=1,2,3
 ```
 
+ * `app` parameter specifies dice faces pattern.
+     * `dot` (dotted dice), The dice face numbers support `1` to `20`.
+     * `num` (numbered dice), The dice face numbers support `1` to `10`.
+     * *(experimental feature)* `card` (playing cards).
  * `type` parameter specifies type of dice.
-     * Set dice count 1〜9 in `type` parameter.
-     * ~~(not implemented) Or set dice count 1〜9 and `d` + dice face maximum number (likes `2d6`) in `type` parameter.~~
+     * Set `d` + dice face maximum number (ex. `d6`) in `type` parameter.
+     * Or set dice count 1〜9 and `d` + dice face maximum number (ex. `2d6`) in `type` parameter.~~
  * `seed` parameter specifies random seed of dice face.
      * Set non zero number in `seed` parameter.
- * ~~(not implemented) `face` parameters specify dice faces one by one.~~
-     * ~~Set numbers separated by `,` in `face` parameter.~~
+     * Or set 0 to use default random seed.
+ * `face` parameters specify dice face numbers one by one.
+     * Set numbers separated by `,` in `face` parameter.
+     * Ignore `seed` parameter if `face` parameters are set.
+
+</details>
+
+### Embed web dice widget.
+
+Copy and paste the code into the HTML of your website.
+
+```
+ <iframe src="https://saikoro.org/d1ce/app.html" width="300" height="300"></iframe>
+```
+
+Or customize query parameters like the code below if use options.
+
+```
+ <iframe src="https://saikoro.org/d1ce/app.html?app=dot&type=3d6" width="100" height="100"></iframe>
+ <iframe src="https://saikoro.org/d1ce/app.html?app=num&type=2d10&seed=0" width="100" height="100"></iframe>
+ <iframe src="https://saikoro.org/d1ce/app.html?app=num&type=3d6&face=1,2,3" width="100" height="100"></iframe>
+```
+
+<details>
+<summary>
+See details of options.
+</summary>
+
+All query parameters are separated by `&` like below.
+
+```
+?app=dot&type=3d6
+?app=num&type=2d10&seed=0
+?app=dot&type=3d6&face=1,2,3
+```
+
+ * `app` parameter specifies dice faces pattern.
+     * `dot` (dotted dice), The dice face numbers support `1` to `20`.
+     * `num` (numbered dice), The dice face numbers support `1` to `10`.
+     * *(experimental feature)* `card` (playing cards).
+ * `type` parameter specifies type of dice.
+     * Set `d` + dice face maximum number (ex. `d6`) in `type` parameter.
+     * Or set dice count 1〜9 and `d` + dice face maximum number (ex. `2d6`) in `type` parameter.~~
+ * `seed` parameter specifies random seed of dice face.
+     * Set non zero number in `seed` parameter.
+     * Or set 0 to use default random seed.
+ * `face` parameters specify dice face numbers one by one.
+     * Set numbers separated by `,` in `face` parameter.
+     * Ignore `seed` parameter if `face` parameters are set.
 
 </details>
 
@@ -65,34 +118,44 @@ See details of return values.
  * Message body is URL query parameter format w/o `?`. All parameters in return values are separated by `&` like below.
 
 ```
-face=1,2&type=2&seed=100
+face=1,2
 ```
 
  * `face` parameters return dice faces one by one.
      * Set numbers separated by `,` in `face` parameter.
- * *(experimental feature)* `type` parameter returns count and type of dice.
-     * Set number 1〜9 in `type` parameter.
-     * ~~(not implemented) Or set number 1〜9 and `d` + dice face maximum number (likes `2d6`) in `type` parameter.~~
- * *(experimental feature)* `seed` parameter returns random seed of dice face.
-     * Set non zero number in `seed` parameter.
 
 </details>
 
-*(experimental feature)* Import `d1ce/engine.js` and construct `d1ce.Params(origin)`, you can easily parse return values from message body like below.
+Import `d1ce/engine.js` and construct `d1ce.Params("*", true)`, you can easily parse return values from message body like below.
 
 ```
  <script type="text/javascript" src="https://saikoro.org/d1ce/engine.js"></script>
  <script type="text/javascript">
-     window.addEventListener("message", (evt) => {
-         if (evt.origin == "https://saikoro.org") {
-             let params = new d1ce.Params(evt.origin);
+     window.onload = async () => {
+         let params = new d1ce.Params("*", true);
+         while (true) {
+             await params.WaitUpdatingValue();
              console.log("face:" + params.Value("face"));
          }
-     }, false);
+     }
  </script>
 ```
 
-Be care that `origin` was set `*` when local test.
+Or below for check message source.
+
+```
+ <script type="text/javascript" src="https://saikoro.org/d1ce/engine.js"></script>
+ <script type="text/javascript">
+     let applet = document.getElementById("main_applet");
+     window.addEventListener("message", (evt) => {
+         if (evt.source == applet.contentWindow) {
+             let params = new d1ce.Params("*", true);
+             console.log("face:" + params.Value("face"));
+         }
+     }
+ </script>
+```
+
 
 
 ## Build

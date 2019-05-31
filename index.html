@@ -17,31 +17,138 @@
 <body>
 
     <div id="container">
-        <div id="header"></div>
-        <!-- Production -  -->
-            <iframe class="main_screen" src="d1ce/app.html"></iframe>
-        <!--  - /Production -->
-        <!-- Development -  - /Development -->
+        <div id="header">
+            <span id="result" class="result_screen"></span>
+        </div>
+        <iframe id="main_applet" class="main_screen"></iframe>
         <div id="footer">
-            <a href="https://twitter.com/sa1koro/" target="_blank"><img src="https://abs.twimg.com/favicons/favicon.ico" style="width:16px;margin-right:-2px">@sa1koro</a>
-            &nbsp;
+            <a id="menu_d6">d6</a> |
+            <a id="menu_2d6">2d6</a> |
+            <a id="menu_3d6">3d6</a> |
+            <a id="menu_d8">d8</a> |
+            <a id="menu_d10">d10</a> |
+            <a id="menu_2d10">2d10</a>
+            <!-- <a href="https://twitter.com/sa1koro/" target="_blank"><img src="https://abs.twimg.com/favicons/favicon.ico" style="width:16px;margin-right:-2px">@sa1koro</a>
+            &nbsp; -->
             <!-- <a href="https://instagram.com/sa1koro/" target="_blank"><img src="https://www.instagram.com/favicon.ico" style="width:16px;margin-right:1px">@sa1koro</a>
             &nbsp; -->
-            <a href="https://github.com/sa1koro/d1ce" target="_blank"><img src="https://github.githubassets.com/favicon.ico"style="width:16px;margin-right:1px">@sa1koro/d1ce</a>
+            <!-- <a href="https://github.com/sa1koro/d1ce" target="_blank"><img src="https://github.githubassets.com/favicon.ico"style="width:16px;margin-right:1px">@sa1koro/d1ce</a> -->
         </div>
     </div>
 
-    <!-- Production -  -->
-        <script type="text/javascript" src="d1ce/engine.js"></script>
-    <!--  - /Production -->
-    <!-- Development -  - /Development -->
+    <script type="text/javascript" src="d1ce/engine.js"></script>
+
     <script type="text/javascript">
+        let applet = document.getElementById("main_applet")
+        let result_screen = new d1ce.Screen("result_screen");
+
+        // Update applet.
+        function UpdateApplet(app, type) {
+
+            // Load dice applet.
+            applet.src = "d1ce/app.html?app=" + app + "&type=" + type;
+
+            // Update result screen as dice type.
+            result_screen.Clear();
+            result_screen.Print("" + type);
+        }
+
+        // Update applet with seed.
+        function UpdateAppletWithSeed(app, type, seed) {
+
+            // Load dice applet.
+            applet.src = "d1ce/app.html?app=" + app + "&type=" + type + "&seed=" + seed;
+
+            // Update result screen as dice type.
+            result_screen.Clear();
+            result_screen.Print("" + type);
+        }
+
+        // Update applet with face.
+        function UpdateAppletWithFace(app, type, face) {
+
+            // Load dice applet.
+            applet.src = "d1ce/app.html?app=" + app + "&type=" + type + "&face=" + face;
+
+            // Update result screen as dice type.
+            result_screen.Clear();
+            result_screen.Print("" + type);
+        }
+
+        // Update result screen.
+        function UpdateResult(result) {
+            result_screen.Clear();
+            result_screen.Print("" + result);
+        }
+
+        // Parse query parameters.
+        let query = new d1ce.Params();
+        if (query.Value("app") && query.Value("type")) {
+            if (query.Value("seed")) {
+                UpdateAppletWithSeed(query.Value("app"), query.Value("type"), query.Value("seed"));
+            } else if (query.Value("face")) {
+                UpdateAppletWithFace(query.Value("app"), query.Value("type"), query.Value("face"));
+            } else {
+                UpdateApplet(query.Value("app"), query.Value("type"));
+            }
+        } else {
+            UpdateApplet("dot", "d6");
+        }
+
+        // Receiving message params.
+        // window.onload = async () => {
+        console.log("Wait for receivng message.");
+
+        // On received message from main applet.
         window.addEventListener("message", (evt) => {
-            let params = new d1ce.Params("*");
-            console.log("type:" + params.Value("type"));
-            console.log("seed:" + params.Value("seed"));
-            console.log("face:" + params.Value("face"));
+            if (evt.source == applet.contentWindow) {
+                let message = new d1ce.Params("*", true);
+            // while (true) {
+            //     await message.WaitUpdatingValue();
+                let app = message.Value("app");
+                let face = message.Value("face");
+                let numbers = face.split(",");
+                let result = 0;
+                if (app == "dot") {
+                    for (let i = 0; i < numbers.length; ++i) {
+                        if (isFinite(numbers[i])) {
+                            result += Number(numbers[i]);
+                        }
+                    }
+                    UpdateResult(result);
+                } else if (app == "num") {
+                    for (let i = 0; i < numbers.length; ++i) {
+                        if (numbers[i] < 10) {
+                            result = result * 10 + Number(numbers[i]);
+                        } else {
+                            result = result * 10;
+                        }
+                    }
+                    UpdateResult(result);
+                }
+            }
+        // }
         }, false);
+
+        // On click menu.
+        document.getElementById("menu_d6").onclick = () => {
+            UpdateApplet("dot", "d6");
+        };
+        document.getElementById("menu_2d6").onclick = () => {
+            UpdateApplet("dot", "2d6");
+        };
+        document.getElementById("menu_3d6").onclick = () => {
+            UpdateApplet("dot", "3d6");
+        };
+        document.getElementById("menu_d8").onclick = () => {
+            UpdateApplet("dot", "d8");
+        };
+        document.getElementById("menu_d10").onclick = () => {
+            UpdateApplet("num", "d10");
+        };
+        document.getElementById("menu_2d10").onclick = () => {
+            UpdateApplet("num", "2d10");
+        };
     </script>
 
     <script>navigator.serviceWorker.register("worker.js");</script>

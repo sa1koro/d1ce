@@ -10,7 +10,7 @@ var d1ce = d1ce || {};
 d1ce.name = "d1ce";
 
 // Version.
-d1ce.version = "0.4.190515+5";
+d1ce.version = "0.5.190601+4";
 
 // Identifier.
 d1ce.identifier = d1ce.name + "-" + d1ce.version;
@@ -75,7 +75,7 @@ d1ce.Engine = class {
 const name = "d1ce";
 
 // Version.
-const version = "0.4.190515+5";
+const version = "0.5.190601+4";
 
 // Identifier.
 const identifier = name + "-" + version;

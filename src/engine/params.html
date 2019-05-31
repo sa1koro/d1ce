@@ -3,6 +3,44 @@
 <meta charset="utf-8">
 </head>
 <body>
+<script type="text/javascript" src="count.js"></script>
 <script type="text/javascript" src="params.js"></script>
+<script type="text/javascript">
+
+    console.log("Wait for receivng message.");
+    window.addEventListener("message", (evt) => {
+        let params = new d1ce.Params("*");
+        params.Keys().forEach((key) => {
+            console.log("" + key + ":" + params.Value(key));
+        });
+        console.log("Message received.");
+    }, false);
+
+    // // Receiving message params.
+    // window.onload = async () => {
+    //     // d1ce.ParamsTest.Main();
+    //
+    //     console.log("Wait for receivng message.");
+    //     await d1ce.Params.Instance().WaitUpdatingValue();
+    //     d1ce.Params.Instance().Keys().forEach((key) => {
+    //         console.log("" + key + ":" + d1ce.Params.Instance().Value(key));
+    //     });
+    //     console.log("Message received.");
+    // }
+</script>
+<iframe srcdoc='
+    <script type="text/javascript" src="count.js"></script>
+    <script type="text/javascript" src="params.js"></script>
+    <script type="text/javascript">
+
+        // Sending message params.
+        window.onload = async () => {
+            await d1ce.Count.Instance().Wait(1000);
+            console.log("Sending message.");
+            d1ce.Params.Instance().UpdateValue("key1", "value1");
+            console.log("Message sent.");
+        }
+    </script>
+'></iframe>
 </body>
 </html>
