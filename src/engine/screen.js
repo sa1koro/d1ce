@@ -98,14 +98,11 @@ d1ce.Sprite = class {
                     this.width = width_ > 0 ? width_ : image.naturalWidth;
                     this.height = height_ > 0 ? height_ : width_ > 0 ? width_ : image.naturalHeight;
                     this.frames = Math.floor(image.naturalWidth / this.width);
-                    // if (this.sprite.style.width == null
-                    // ||  this.sprite.style.height == null) {
-                        this.sprite.style.width = this.width;
-                        this.sprite.style.height = this.height;
-                        this.sprite.style.backgroundSize = ""
-                        + (image.naturalWidth / this.width) + " "
-                        + (image.naturalHeight / this.height);
-                    // }
+                    this.sprite.style.width = this.width;
+                    this.sprite.style.height = this.height;
+                    let sizex = image.naturalWidth / this.width * 100;
+                    let sizey = image.naturalHeight / this.height * 100;
+                    this.sprite.style.backgroundSize = "" + sizex + "%" + " " + sizey + "%";
                     let url = "url(\"" + name + "\")";
                     this.sprite.style.backgroundImage = url;
                 }
@@ -117,7 +114,7 @@ d1ce.Sprite = class {
     // Wait loading image.
     async WaitLoadingImage() {
         while (this.frames <= 0) {
-            await new Promise(r => setTimeout(r, 100));
+            await new Promise(r => setTimeout(r, 10));
         }
     }
 

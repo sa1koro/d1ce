@@ -10,7 +10,7 @@ class Hand {
         this.screen = screen;
         this.input = new d1ce.Input(screen);
         this.count = 0;
-        this.arrow = null;
+        // this.arrow = null;
         this.point = null;
 
         this.touching = null;
@@ -22,12 +22,10 @@ class Hand {
 
     // Setup screen after load assets.
     async Load() {
-        this.arrow = new d1ce.Sprite("arrow");
-        this.arrow.LoadImage("data:image/svg+xml;charset=utf8,<svg viewBox='0 0 16 16' width='100' xmlns='http://www.w3.org/2000/svg'><path d='M12,8l-4,-1l0,2Z' stroke='none' fill='silver'/></svg>", 100, 100);
-        this.arrow.SetFrame2(0, 0, 100, 100);
+        // this.arrow = new d1ce.Sprite("arrow");
+        // this.arrow.LoadImage("data:image/svg+xml;charset=utf8,<svg viewBox='0 0 128 128' width='128' xmlns='http://www.w3.org/2000/svg'><path d='M96,64l-32,-8l0,16Z' stroke='none' fill='silver'/></svg>");
         this.point = new d1ce.Sprite("point");
-        this.point.LoadImage("data:image/svg+xml;charset=utf8,<svg viewBox='0 0 16 16' width='100' xmlns='http://www.w3.org/2000/svg'><circle cx='8' cy='8' r='4' stroke='silver' fill='none'/></svg>", 100, 100);
-        this.point.SetFrame2(0, 0, 100, 100);
+        this.point.LoadImage("data:image/svg+xml;charset=utf8,<svg viewBox='0 0 128 128' width='128' xmlns='http://www.w3.org/2000/svg'><circle cx='64' cy='64' r='32' stroke='silver' stroke-width='8' fill='none'/></svg>");
     }
 
     // Get touching.
@@ -39,7 +37,7 @@ class Hand {
     StartTouching() {
         this.touching = this.input.Dirs(true);
         if (this.input.Point()) {
-            this.arrow.SetAnime("selecting");
+            // this.arrow.SetAnime("selecting");
             this.point.SetAnime("selecting");
         }
     }
@@ -53,7 +51,7 @@ class Hand {
     StartHolding() {
         this.holding = this.input.Dirs(true);
         if (this.input.Point()) {
-            this.arrow.SetAnime("holding");
+            // this.arrow.SetAnime("holding");
             this.point.SetAnime("holding");
         }
     }
@@ -67,9 +65,9 @@ class Hand {
     StartSwiping() {
         this.swiping = this.input.Dirs(true);
         if (this.input.Point()) {
-            let dir = this.input.Point().Sub(this.input.Point(true));
-            this.arrow.SetDir(dir);
-            this.arrow.SetAnime("swiping");
+            // let dir = this.input.Point().Sub(this.input.Point(true));
+            // this.arrow.SetDir(dir);
+            // this.arrow.SetAnime("swiping");
             this.point.SetAnime("swiping");
         }
     }
@@ -83,7 +81,7 @@ class Hand {
     StartTapped() {
         this.tapped = this.input.Dirs();
         if (this.input.Point()) {
-            this.arrow.SetAnime("decided");
+            // this.arrow.SetAnime("decided");
             this.point.SetAnime("decided");
         }
     }
@@ -97,7 +95,7 @@ class Hand {
     StartReleased() {
         this.released = this.input.Dirs();
         if (this.input.Point()) {
-            this.arrow.SetAnime("released");
+            // this.arrow.SetAnime("released");
             this.point.SetAnime("released");
         }
     }
@@ -154,9 +152,9 @@ class Hand {
 
         // Pointing.
         if (this.input.Point()) {
-            this.arrow.SetPos(this.input.Point(true));
+            // this.arrow.SetPos(this.input.Point(true));
             this.point.SetPos(this.input.Point());
-            this.arrow.Enable(this.screen, true);
+            // this.arrow.Enable(this.screen, true);
             this.point.Enable(this.screen, true);
         }
     }

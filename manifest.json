@@ -7,6 +7,6 @@
         "src": "./d1ce/info/icon192.png",
         "sizes": "192x192"
     }],
-    "start_url": "./?app=d1ce",
+    "start_url": "./?tag=app@saikoro.org",
     "display": "standalone"
 }

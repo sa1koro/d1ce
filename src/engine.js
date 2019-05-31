@@ -10,7 +10,7 @@ var d1ce = d1ce || {};
 d1ce.name = "d1ce";
 
 // Version.
-d1ce.version = "0.4.190515+5";
+d1ce.version = "0.5.190601+4";
 
 // Identifier.
 d1ce.identifier = d1ce.name + "-" + d1ce.version;
@@ -43,8 +43,8 @@ d1ce.Engine = class {
     }
 
     // Update parameters value.
-    static UpdateValue(key, value) {
-        d1ce.Params.Instance().UpdateValue(key, value);
+    static UpdateValue(key, value, noflush=false) {
+        d1ce.Params.Instance().UpdateValue(key, value, noflush);
     }
 
     // Print text to screen.

@@ -1,6 +1,6 @@
 {
   "name": "d1ce",
-  "version": "0.4.190515+5",
+  "version": "0.5.190601+4",
   "description": "Draw 1 Cube Engine for Saikoro.org",
   "devDependencies": {
     "svg2png": "^4.1.1",

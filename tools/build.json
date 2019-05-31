@@ -30,7 +30,7 @@
 	      "ignore_nobuild": true,
 	      "minify": true},
 
-	"5": "Minify widget js files.",
+	"5": "Minify app js files.",
 	"5": {"srcfiles": ["src/app.js",
 	                   "src/app/hand.js",
 	                   "src/app/cubes.js"],
@@ -38,31 +38,18 @@
 	      "ignore_nobuild": true,
 	      "minify": true},
 
-	"6": "Minify widget asset files.",
+	"6": "Minify app asset files.",
 	"6": {"srcfiles": ["src/app.css",
 	                   "src/app/hand.css",
 	                   "src/app/cubes.css"],
 	      "target": "d1ce/app.css",
 	      "minify": true},
 
-	"7": "Copy widget image files.",
-	"7": {"srcfiles": ["src/cubes.png"],
-	      "target": "d1ce/cubes.png"},
-
-	"8": "Minify widget html file.",
+	"8": "Minify app html file.",
 	"8": {"srcfiles": ["src/app.html"],
 	      "target": "d1ce/app.html",
 	      "ignore_nobuild": true,
 	      "minify": true},
-
-	"9": "Deploy index style files.",
-	"9": {"srcfiles": ["src/style.css"],
-	      "target": "style.css"},
-
-	"10": "Deploy index html file.",
-	"10": {"srcfiles": ["src/index.html"],
-	      "target": "index.html",
-	      "ignore_nobuild": true},
 
 	"12": "Convert icon file.",
 	"12": {"srcfiles": ["src/info/icon.svg"],
@@ -77,5 +64,17 @@
 	"14": "Convert startup screen file.",
 	"14": {"srcfiles": ["src/info/startup.svg"],
 	       "options": {"width": 1080, "height": 1920},
-	       "target": "d1ce/info/startup.png"}
+	       "target": "d1ce/info/startup.png"},
+
+	"15": "Copy app image files.",
+	"15": {"srcfiles": ["src/image/dot.png"],
+	      "target": "d1ce/image/dot.png"},
+
+   	"16": "Copy app image files.",
+   	"16": {"srcfiles": ["src/image/num.png"],
+   	      "target": "d1ce/image/num.png"},
+
+   	"17": "Copy app image files.",
+   	"17": {"srcfiles": ["src/image/card.png"],
+   	      "target": "d1ce/image/card.png"}
 }
