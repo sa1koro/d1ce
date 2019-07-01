@@ -6,14 +6,14 @@
 const name = "d1ce";
 
 // Version.
-const version = "0.2.190327+16";
+const version = "0.6.190616+6";
 
 // Identifier.
 const identifier = name + "-" + version;
 
 // Cache files.
 // (need to set relative path "./" or absolute path "/")
-const cachefiles = ["./app.html", "./style.css", "./app.css", "./engine.js", "./app.js"];
+const cachefiles = ["./style.css", "./app.html", "./app.css", "./image/dot.png", "./image/num.png", "./image/card.png", "./engine.js", "./app.js"];
 
 
 // Event on installing service worker.

@@ -22,6 +22,14 @@
     transform-origin: 50% 50%;
     animation: cubes_reselecting 0.1s forwards;
 }
+@keyframes cubes_unselecting {
+    0% { transform: scale(0.8); }
+    100% { transform: scale(0.9); }
+}
+.cubes.unselecting {
+    transform-origin: 50% 50%;
+    animation: cubes_unselecting 0.1s forwards;
+}
 @keyframes cubes_holding {
     0% { transform: scale(0.8); }
     100% { transform: scale(0.7); }

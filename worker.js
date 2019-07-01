@@ -6,7 +6,7 @@
 const name = "d1ce";
 
 // Version.
-const version = "0.5.190601+4";
+const version = "0.6.190608+4";
 
 // Identifier.
 const identifier = name + "-" + version;

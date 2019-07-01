@@ -10,7 +10,7 @@ class App {
 
         // Print timestamp.
         let info_screen = new d1ce.Screen("info_screen");
-        info_screen.Print(d1ce.timestamp);
+        info_screen.Print("#D1CE" + d1ce.timestamp + "(c)Saikoro.org");
 
         // Create screens.
         this.log_screen = new d1ce.Screen("log_screen");
@@ -20,12 +20,47 @@ class App {
         // Create sprites.
         this.hand = new Hand(this.touch_screen);
         this.cubes = new Cubes(this.main_screen);
+        this.touching = null;
+
+        // Select mode parameter from query.
+        let query = new d1ce.Params("");
+        if (query.Value("flag") != null) {
+            this.mode = "widget/flag";
+        } else if (query.Value("face") != null) {
+            this.mode = "widget/link";
+        } else if (query.Value("seed") != null) {
+            this.mode = "web";
+        } else if (query.Value("type") != null) {
+            if (query.Value("type").match(/([\+\-])(\d*)d(\d*)/)) {
+                this.mode = "widget/flag";
+            } else {
+                this.mode = "widget/free";
+            }
+        } else {
+            this.mode = "app";
+        }
+
+        console.log("mode:" + this.mode);
     }
 
     // Setup screen after load assets.
     async Load() {
+
         await this.hand.Load();
         await this.cubes.Load();
+
+        // Show cubes.
+        if (this.mode == "app") {
+            this.cubes.StartReleased();
+
+        // Show cubes.
+        } else if (this.mode == "widget/free") {
+            this.cubes.StartReleased();
+
+        // Roll cubes.
+        } else {
+            this.cubes.StartRolling();
+        }
     }
 
     // Store status on suspend.
@@ -37,58 +72,106 @@ class App {
     Update() {
         this.hand.Update();
 
-        // Tapped -> Roll cubes.
+        // Tapped.
         if (this.hand.Tapped()) {
-            this.cubes.StartRolling();
 
-        // Released -> Change cubes or do test method.
+            // Reroll cubes.
+            if (this.mode == "app") {
+                this.cubes.StartRerolling();
+
+            // Reroll cubes.
+            } else if (this.mode == "widget/free") {
+                this.cubes.StartRerolling();
+
+            // Flag cube.
+            } else if (this.mode == "widget/flag") {
+                this.cubes.StartFlagged(this.touching);
+            }
+
+            // Touch end.
+            this.touching = null;
+
+        // Released.
         } else if (this.hand.Released()) {
 
-            // Released right -> Change cubes type.
-            if (this.hand.Released().Right()) {
+            // Change cube types.
+            if (this.mode == "app") {
+                if (this.hand.Released().Right()) {
+                    this.cubes.StartChanging(1);
+                } else if (this.hand.Released().Left()) {
+                    this.cubes.StartChanging(-1);
+                } else {
+                    this.cubes.StartReleased();
+                }
 
-                // // Clear cache.
-                // if (this.cubes.option.Value("type") >= 3) {
-                //     this.log_screen.Print("Clear local storage.");
-                //     window.localStorage.clear();
-                //     this.log_screen.Print("Clear cache.");
-                //     window.caches.keys().then((keys) => {
-                //         keys.map((key) => {
-                //             window.caches.delete(key);
-                //         });
-                //     });
-                //     this.log_screen.Print("Clear debug screen.");
-                //     this.log_screen.Clear();
-                // }
+            // Canceled cube.
+            } else if (this.mode == "widget/free") {
+                this.cubes.StartReleased();
 
-                this.cubes.StartChanging(1);
+            // Flagged cubes.
+            } else if (this.mode == "widget/flag") {
+                this.cubes.StartFlagged();
 
-            // Released left -> Change cubes type.
-            } else if (this.hand.Released().Left()) {
-                this.cubes.StartChanging(-1);
-
-            // Released other -> Selecting cubes.
+            // Released cubes.
             } else {
                 this.cubes.StartReleased();
             }
 
-        // Swiping -> Swiping cubes.
+            // Touch end.
+            this.touching = null;
+
+        // Swiping.
         } else if (this.hand.Swiping()) {
-            if (this.hand.Swiping().Right()) {
-                this.cubes.StartHolding(1);
-            } else if (this.hand.Swiping().Left()) {
-                this.cubes.StartHolding(-1);
-            } else {
-                this.cubes.StartHolding(0);
+
+            // Holding cubes.
+            if (this.mode == "app") {
+                if (this.hand.Swiping().Right()) {
+                    this.cubes.StartHolding(1);
+                } else if (this.hand.Swiping().Left()) {
+                    this.cubes.StartHolding(-1);
+                } else {
+                    this.cubes.StartHolding(0);
+                }
+
+            // Canceled cube.
+            } else if (this.mode == "widget/free") {
+                this.cubes.StartReleased();
+
+            // Unflagged cube.
+            } else if (this.mode == "widget/flag") {
+                this.cubes.StartUnselecting(this.touching);
             }
 
-        // Holding -> Holding cubes.
+        // Holding.
         } else if (this.hand.Holding()) {
-            this.cubes.StartHolding(0);
 
-        // Touching -> Selecting cubes.
+            // Holding cubes.
+            if (this.mode == "app") {
+                this.cubes.StartHolding(0);
+
+            // Canceled cube.
+            } else if (this.mode == "widget/free") {
+                this.cubes.StartReleased();
+
+            // Unflagged cubes.
+            } else if (this.mode == "widget/flag") {
+                this.cubes.StartUnselecting(this.touching);
+            }
+
+        // Touching.
         } else if (this.hand.Touching()) {
-            this.cubes.StartSelecting();
+
+            // Touch start.
+            this.touching = this.hand.Point();
+
+            // Touch cubes.
+            if (this.mode == "app" || this.mode == "widget/free") {
+                this.cubes.StartTouching();
+
+            // Flag cube.
+            } else if (this.mode == "widget/flag") {
+                this.cubes.StartSelecting(this.touching);
+            }
         }
 
         this.cubes.Update();

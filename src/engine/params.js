@@ -48,6 +48,7 @@ d1ce.Params = class {
 
     // Parse text and update parameters.
     ParseText(text) {
+        this.keyvalues = {};
         if (text.includes('&')) {
             text.split('&').forEach((q) => {
                 let keyvalue = q.split('=');

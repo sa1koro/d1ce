@@ -20,15 +20,15 @@ The web app "Saikoro" (means dice in Japanese) is based on "D1CE" and released a
 Redirect to the URL.
 
 ```
- https://saikoro.org/
+ https://saikoro.org/d1ce/app.html
 ```
 
 Or customize query parameters like the URL below if use options.
 
 ```
- https://saikoro.org/?app=dot&type=3d6
- https://saikoro.org/?app=dot&type=2d10&seed=0
- https://saikoro.org/?app=num&type=3d6&face=1,2m3
+ https://saikoro.org/d1ce/app.html?type=3d6
+ https://saikoro.org/d1ce/app.html?type=2d10&seed=0
+ https://saikoro.org/d1ce/app.html?type=3d6&face=1,2,3
 ```
 
 <details>
@@ -39,15 +39,11 @@ See details of options.
 All query parameters are separated by `&` like below.
 
 ```
-?app=dot&type=3d6
-?app=num&type=2d10&seed=0
-?app=dot&type=3d6&face=1,2,3
+?type=3d6
+?type=2d10&seed=0
+?type=3d6&face=1,2,3
 ```
 
- * `app` parameter specifies dice faces pattern.
-     * `dot` (dotted dice), The dice face numbers support `1` to `20`.
-     * `num` (numbered dice), The dice face numbers support `1` to `10`.
-     * *(experimental feature)* `card` (playing cards).
  * `type` parameter specifies type of dice.
      * Set `d` + dice face maximum number (ex. `d6`) in `type` parameter.
      * Or set dice count 1〜9 and `d` + dice face maximum number (ex. `2d6`) in `type` parameter.~~
@@ -71,9 +67,9 @@ Copy and paste the code into the HTML of your website.
 Or customize query parameters like the code below if use options.
 
 ```
- <iframe src="https://saikoro.org/d1ce/app.html?app=dot&type=3d6" width="100" height="100"></iframe>
- <iframe src="https://saikoro.org/d1ce/app.html?app=num&type=2d10&seed=0" width="100" height="100"></iframe>
- <iframe src="https://saikoro.org/d1ce/app.html?app=num&type=3d6&face=1,2,3" width="100" height="100"></iframe>
+ <iframe src="https://saikoro.org/d1ce/app.html?type=3d6" width="100" height="100"></iframe>
+ <iframe src="https://saikoro.org/d1ce/app.html?type=2d10&seed=0" width="100" height="100"></iframe>
+ <iframe src="https://saikoro.org/d1ce/app.html?type=3d6&face=1,2,3" width="100" height="100"></iframe>
 ```
 
 <details>
@@ -84,15 +80,11 @@ See details of options.
 All query parameters are separated by `&` like below.
 
 ```
-?app=dot&type=3d6
-?app=num&type=2d10&seed=0
-?app=dot&type=3d6&face=1,2,3
+?type=3d6
+?type=2d10&seed=0
+?type=3d6&face=1,2,3
 ```
 
- * `app` parameter specifies dice faces pattern.
-     * `dot` (dotted dice), The dice face numbers support `1` to `20`.
-     * `num` (numbered dice), The dice face numbers support `1` to `10`.
-     * *(experimental feature)* `card` (playing cards).
  * `type` parameter specifies type of dice.
      * Set `d` + dice face maximum number (ex. `d6`) in `type` parameter.
      * Or set dice count 1〜9 and `d` + dice face maximum number (ex. `2d6`) in `type` parameter.~~

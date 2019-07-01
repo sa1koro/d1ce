@@ -15,8 +15,8 @@
 	      "update_version": true},
 
 	"3": "Update version for service worker js file.",
-	"3": {"srcfiles": ["worker.js"],
-	      "target": "worker.js",
+	"3": {"srcfiles": ["src/worker.js"],
+	      "target": "src/worker.js",
 	    "update_version": true},
 
 	"4": "Minify engine js files.",
@@ -39,9 +39,9 @@
 	      "minify": true},
 
 	"6": "Minify app asset files.",
-	"6": {"srcfiles": ["src/app.css",
-	                   "src/app/hand.css",
-	                   "src/app/cubes.css"],
+	"6": {"srcfiles": ["src/app/hand.css",
+	                   "src/app/cubes.css",
+	                   "src/app.css"],
 	      "target": "d1ce/app.css",
 	      "minify": true},
 
@@ -50,6 +50,23 @@
 	      "target": "d1ce/app.html",
 	      "ignore_nobuild": true,
 	      "minify": true},
+
+	"9": "Minify worker js files.",
+	"9": {"srcfiles": ["src/worker.js"],
+	      "target": "d1ce/worker.js",
+	      "ignore_nobuild": true,
+	      "minify": true},
+
+	"10": "Minify index asset files.",
+	"10": {"srcfiles": ["src/style.css"],
+	      "target": "d1ce/style.css",
+	      "minify": false},
+
+	"11": "Minify index html file.",
+	"11": {"srcfiles": ["src/index.html"],
+	      "target": "d1ce/index.html",
+	      "ignore_nobuild": true,
+	      "minify": false},
 
 	"12": "Convert icon file.",
 	"12": {"srcfiles": ["src/info/icon.svg"],

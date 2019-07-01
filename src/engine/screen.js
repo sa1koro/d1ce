@@ -133,6 +133,16 @@ d1ce.Sprite = class {
         }
     }
 
+    // Check pos is in sprite rect.
+    IsInRect(pos) {
+        if (this.root != null && pos != null) {
+            let rect = this.root.getBoundingClientRect();
+            return pos.x > rect.left && pos.x < rect.right &&
+                   pos.y > rect.top && pos.y < rect.bottom;
+        }
+        return false;
+    }
+
     // Set sprite position vector.
     SetPos(pos) {
         if (this.root != null) {

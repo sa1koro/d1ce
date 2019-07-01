@@ -17,82 +17,282 @@
 <body>
 
     <div id="container">
-        <div id="header">
+        <span id="header">
             <span id="result" class="result_screen"></span>
-        </div>
+        </span>
         <iframe id="main_applet" class="main_screen"></iframe>
-        <div id="footer">
-            <a id="menu_d6">d6</a> |
-            <a id="menu_2d6">2d6</a> |
-            <a id="menu_3d6">3d6</a> |
-            <a id="menu_d8">d8</a> |
-            <a id="menu_d10">d10</a> |
-            <a id="menu_2d10">2d10</a>
+        <span id="footer">
+            <span id="menu" class="menu_screen">
+                <a id="menu_d6">d6</a> |
+                <a id="menu_2d6">2d6</a> |
+                <a id="menu_3d6">3d6</a> |
+                <a id="menu_d8">d8</a> |
+                <a id="menu_d10">d10</a> |
+                <a id="menu_2d10">2d10</a>
+            </span>
             <!-- <a href="https://twitter.com/sa1koro/" target="_blank"><img src="https://abs.twimg.com/favicons/favicon.ico" style="width:16px;margin-right:-2px">@sa1koro</a>
             &nbsp; -->
             <!-- <a href="https://instagram.com/sa1koro/" target="_blank"><img src="https://www.instagram.com/favicon.ico" style="width:16px;margin-right:1px">@sa1koro</a>
             &nbsp; -->
             <!-- <a href="https://github.com/sa1koro/d1ce" target="_blank"><img src="https://github.githubassets.com/favicon.ico"style="width:16px;margin-right:1px">@sa1koro/d1ce</a> -->
-        </div>
+        </span>
     </div>
 
     <script type="text/javascript" src="d1ce/engine.js"></script>
+    <!-- <script type="text/javascript" src="d1ce/engine/params.js"></script>
+    <script type="text/javascript" src="d1ce/engine/screen.js"></script> -->
 
     <script type="text/javascript">
-        let applet = document.getElementById("main_applet")
         let result_screen = new d1ce.Screen("result_screen");
+        let menu_screen = new d1ce.Screen("menu_screen")
+        let applet = document.getElementById("main_applet")
+        let menu = {
+            "d6": document.getElementById("menu_d6"),
+            "2d6": document.getElementById("menu_2d6"),
+            "3d6": document.getElementById("menu_3d6"),
+            "d8": document.getElementById("menu_d8"),
+            "d10": document.getElementById("menu_d10"),
+            "2d10": document.getElementById("menu_2d10"),
+        };
 
         // Update applet.
-        function UpdateApplet(app, type) {
+        function UpdateApplet(type, seed = null, face = null, flag = null) {
 
             // Load dice applet.
-            applet.src = "d1ce/app.html?app=" + app + "&type=" + type;
+            let args = (type != null ? "&type=" + type : "") +
+                (seed != null ? "&seed=" + seed : "") +
+                (face != null ? "&face=" + face : "") +
+                (flag != null ? "&flag=" + flag : "");
+            applet.src = "d1ce/app.html?" + args.slice(1);
 
-            // Update result screen as dice type.
+            // Change menu color.
+            Object.keys(menu).forEach((key) => {
+                if (key == type) {
+                    menu[key].style.color = "#000";
+                } else {
+                    menu[key].style.color = "#666";
+                }
+            });
+
+            // Clear result screen.
             result_screen.Clear();
-            result_screen.Print("" + type);
-        }
-
-        // Update applet with seed.
-        function UpdateAppletWithSeed(app, type, seed) {
-
-            // Load dice applet.
-            applet.src = "d1ce/app.html?app=" + app + "&type=" + type + "&seed=" + seed;
-
-            // Update result screen as dice type.
-            result_screen.Clear();
-            result_screen.Print("" + type);
-        }
-
-        // Update applet with face.
-        function UpdateAppletWithFace(app, type, face) {
-
-            // Load dice applet.
-            applet.src = "d1ce/app.html?app=" + app + "&type=" + type + "&face=" + face;
-
-            // Update result screen as dice type.
-            result_screen.Clear();
-            result_screen.Print("" + type);
+            result_screen.Print("?");
         }
 
         // Update result screen.
         function UpdateResult(result) {
             result_screen.Clear();
-            result_screen.Print("" + result);
+            result_screen.Print(result);
+        }
+
+        // Update menu screen.
+        function UpdateMenu(menu) {
+            menu_screen.Clear();
+            menu_screen.Print(menu);
+        }
+
+        // Parse type parameter.
+        function ParseTypeParams(type) {
+            let type_count = 1;
+            let type_number = 6;
+            if (type && type.match(/(\d*)d(\d*)/)) {
+                type.replace(/(\d*)d(\d*)/, (match, p1, p2) => {
+                    (match);
+                    type_count = p1 > 0 ? Number(p1) : 1;
+                    type_number = p2 > 0 ? Number(p2) : 6;
+                });
+            }
+            return [type_count, type_number];
+        }
+
+        // Parse face parameter.
+        function ParseFaceParams(face) {
+            return face && face.split(",").map((n) => isFinite(n) ? Number(n) : 0) || [];
+        }
+
+        // Parse flag parameter.
+        function ParseFlagParams(flag) {
+            return flag && flag.split(",").map((n) => isFinite(n) ? Number(n) : 0) || [];
+        }
+
+        // Result of Blackjack.
+        function BlackjackResult(face_numbers) {
+            let card_numbers = face_numbers.map((n) => n <= 52 ? (n - 1) % 13 + 1 : 0);
+            let result = 0;
+            let joker = 0;
+            let ace = 0;
+            for (let i = 0; i < face_numbers.length; ++i) {
+                if (card_numbers[i] == 0) {
+                    joker += 1;
+                } else if (card_numbers[i] == 1) {
+                    ace += 1;
+                } else if (card_numbers[i] >= 10) {
+                    result += 10;
+                } else {
+                    result += card_numbers[i];
+                }
+            }
+            for (; ace > 0; ace -= 1) {
+                if (result + joker + ace <= 11) {
+                    result += 11;
+                } else {
+                    result += 1;
+                }
+            }
+            for (; joker > 0; joker -= 1) {
+                if (result + joker <= 11) {
+                    result += 11;
+                } else if (result + joker >= 12 && result + joker <= 21) {
+                    result += 22 - (result + joker);
+                } else {
+                    result += 1;
+                }
+            }
+            return result > 21 ? "Bust" : result == 21 ? "Blackjack" : result;
+        }
+
+        // Result of Poker.
+        function PokerResult(face_numbers) {
+            let card_numbers = face_numbers.map((n) => n <= 52 ? (n - 1) % 13 + 1 : 0).map((n) => n == 1 ? 14 : n).sort((a, b) => a - b);
+            let card_suits = face_numbers.map((n) => n <= 52 ? Math.floor((n - 1) / 13) + 1 : 0).sort((a, b) => a - b);
+            let joker = 0;
+            let flush = 1;
+            let straight = 0;
+            let pairs = 0;
+            let pairs_numbers = [];
+            let highcard = card_numbers[4];
+
+            // Count joker.
+            for (let i = 0; i < face_numbers.length; ++i) {
+                if (card_numbers[i] == 0) {
+                    joker += 1;
+                }
+            }
+
+            // Check hands are flush.
+            for (let i = 1; i < face_numbers.length; ++i) {
+                if (card_suits[i] > 0 && card_suits[i - 1] > 0) {
+                    if (card_suits[i] != card_suits[i - 1]) {
+                        flush = 0;
+                    }
+                }
+            }
+
+            // Count pairs and check hands are straight.
+            let straight_highcard = highcard;
+            for (let i = 1; i < face_numbers.length; ++i) {
+                if (card_numbers[i] > 0 && card_numbers[i - 1] > 0) {
+                    if (card_numbers[i] != card_numbers[i - 1]) {
+                        if (card_numbers[i] == 14) {
+
+                            // Check 10 to A straight.
+                            if (card_numbers[i - 1] >= 6) {
+                                straight += card_numbers[i] - card_numbers[i - 1] - 1;
+
+                            // Check A to 5 straight.
+                            } else {
+                                straight += card_numbers[0] - 2;
+                                straight_highcard = 5;
+                            }
+                        } else {
+                            straight += card_numbers[i] - card_numbers[i - 1] - 1;
+                        }
+                    } else {
+                        pairs += 1;
+                        pairs_numbers.push(card_numbers[i]);
+                    }
+                }
+            }
+
+            // Result.
+            if (pairs + joker >= 4) {
+                return "Five of a kind";
+            } else if (flush) {
+                if (pairs == 0 && straight <= joker) {
+                    if (straight_highcard == 14) {
+                        return "Royal flush";
+                    } else {
+                        return "Straight flush";
+                    }
+                } else {
+                    return "Flush";
+                }
+            } else if (pairs == 0 && straight <= joker) {
+                return "Straight";
+            } else if (pairs + joker >= 1) {
+
+                // Count same cards and update highcard of pairs.
+                let pairs_highcard = 0;
+                let samecards = pairs >= 1 ? 2 : 1;
+                for (let i = 0; i < pairs_numbers.length; ++i) {
+                    if (pairs_numbers[i] > 0) {
+                        if (pairs_highcard == pairs_numbers[i]) {
+                            samecards += 1;
+                        } else if (pairs_highcard < pairs_numbers[i]) {
+                            pairs_highcard = pairs_numbers[i];
+                        }
+                    }
+                }
+
+                if (samecards + joker >= 4) {
+                    return "Four of a kind";
+                } else if (samecards + joker >= 3 && pairs + joker >= 3) {
+                    return "Full house";
+                } else if (samecards + joker >= 3) {
+                    return "Three of a kind";
+                } else if (pairs + joker >= 2) {
+                    return "Two pair";
+                } else {
+                    return "One pair";
+                }
+            }
+            return highcard == 14 ? "Ace" :
+                   highcard == 13 ? "King" :
+                   highcard == 12 ? "Queen" :
+                   highcard == 11 ? "Jack" : "" + highcard;
         }
 
         // Parse query parameters.
         let query = new d1ce.Params();
-        if (query.Value("app") && query.Value("type")) {
-            if (query.Value("seed")) {
-                UpdateAppletWithSeed(query.Value("app"), query.Value("type"), query.Value("seed"));
-            } else if (query.Value("face")) {
-                UpdateAppletWithFace(query.Value("app"), query.Value("type"), query.Value("face"));
+        if (query.Value("type")) {
+            if (query.Value("face")) {
+                if (query.Value("flag")) {
+                    UpdateApplet(query.Value("type"), null, query.Value("face"), query.Value("flag"));
+                } else {
+                    UpdateApplet(query.Value("type"), null, query.Value("face"));
+                }
+            } else if (query.Value("seed")) {
+                UpdateApplet(query.Value("type"), query.Value("seed"));
             } else {
-                UpdateApplet(query.Value("app"), query.Value("type"));
+                UpdateApplet(query.Value("type"));
             }
+
+            // Parse type parameter.
+            let type = ParseTypeParams(query.Value("type"));
+
+            // Reset menu screen for Blackjack.
+            if (type[1] >= 52 && type[1] <= 54 && type[0] >= 2 && type[0] <= 4) {
+                UpdateMenu("Blackjack");
+
+            // Reset menu screen for Poker.
+            } else if (type[1] >= 52 && type[1] <= 54 && type[0] == 5) {
+                UpdateMenu("Poker");
+
+            // Reset menu screen for Dice.
+            } else {
+                UpdateMenu("" + type[0] + "d" + type[1]);
+            }
+
+        } else if (query.Value("face")) {
+            if (query.Value("flag")) {
+                UpdateApplet(null, null, query.Value("face"), query.Value("flag"));
+            } else {
+                UpdateApplet(null, null, query.Value("face"));
+            }
+        } else if (query.Value("seed")) {
+            UpdateApplet(null, query.Value("seed"));
         } else {
-            UpdateApplet("dot", "d6");
+            UpdateApplet("d6");
         }
 
         // Receiving message params.
@@ -105,50 +305,94 @@
                 let message = new d1ce.Params("*", true);
             // while (true) {
             //     await message.WaitUpdatingValue();
-                let app = message.Value("app");
-                let face = message.Value("face");
-                let numbers = face.split(",");
-                let result = 0;
-                if (app == "dot") {
-                    for (let i = 0; i < numbers.length; ++i) {
-                        if (isFinite(numbers[i])) {
-                            result += Number(numbers[i]);
+
+                // Parse type parameter.
+                let type = ParseTypeParams(message.Value("type"));
+
+                // Parse face parameter.
+                let face = ParseFaceParams(message.Value("face"));
+
+                // Parse select parameter.
+                let flag = ParseFlagParams(message.Value("flag"));
+
+                console.log("Received type=" + message.Value("type") +
+                            " face=" + message.Value("face") +
+                            " flag=" + message.Value("flag"));
+
+                // Now rolling or undefined dice.
+                if (face.length == 0) {
+                    UpdateResult("?");
+
+                // Received flag.
+                } else if (flag.length > 0) {
+
+                    // Reroll.
+                    if (type[1] <= 20) {
+                        let face_next = [];
+                        let flag_next = [];
+                        for (let i = 0; i < flag.length; ++i) {
+                            if (!flag[i]) {
+                                face_next.push(face[i]);
+                            } else {
+                                face_next.push(0);
+                            }
+                        }
+                        UpdateApplet(message.Value("type"), null, face_next, flag_next);
+
+                    // Discard.
+                    } else {
+                        let face_next = [];
+                        let flag_next = [];
+                        for (let i = 0; i < face.length; ++i) {
+                            if (!flag[i]) {
+                                face_next.push(face[i]);
+                            }
+                        }
+                        if (face_next.length != face.length) {
+                            UpdateApplet("" + face_next.length + "d" + type[1], null, face_next, flag_next);
                         }
                     }
-                    UpdateResult(result);
-                } else if (app == "num") {
-                    for (let i = 0; i < numbers.length; ++i) {
-                        if (numbers[i] < 10) {
-                            result = result * 10 + Number(numbers[i]);
-                        } else {
-                            result = result * 10;
+
+                // Rolled dice.
+                } else {
+
+                    // Dotted dice.
+                    if (type[1] == 10) {
+                        let result = 0;
+                        for (let i = 0; i < face.length; ++i) {
+                            if (face[i] < 10) {
+                                result = result * 10 + face[i];
+                            } else {
+                                result = result * 10;
+                            }
                         }
+                        UpdateResult(result);
+
+                    // Numbered dice.
+                    } else if (type[1] <= 20) {
+                        let result = 0;
+                        for (let i = 0; i < face.length; ++i) {
+                            result += face[i];
+                        }
+                        UpdateResult(result);
+
+                    // Blackjack.
+                    } else if (type[1] >= 52 && type[1] <= 54 && type[0] >= 2 && type[0] <= 4) {
+                        UpdateResult(BlackjackResult(face));
+
+                    // Poker.
+                    } else if (type[1] >= 52 && type[1] <= 54 && type[0] == 5) {
+                        UpdateResult(PokerResult(face));
                     }
-                    UpdateResult(result);
                 }
             }
         // }
         }, false);
 
         // On click menu.
-        document.getElementById("menu_d6").onclick = () => {
-            UpdateApplet("dot", "d6");
-        };
-        document.getElementById("menu_2d6").onclick = () => {
-            UpdateApplet("dot", "2d6");
-        };
-        document.getElementById("menu_3d6").onclick = () => {
-            UpdateApplet("dot", "3d6");
-        };
-        document.getElementById("menu_d8").onclick = () => {
-            UpdateApplet("dot", "d8");
-        };
-        document.getElementById("menu_d10").onclick = () => {
-            UpdateApplet("num", "d10");
-        };
-        document.getElementById("menu_2d10").onclick = () => {
-            UpdateApplet("num", "2d10");
-        };
+        Object.keys(menu).forEach((key) => {
+            menu[key].onclick = () => UpdateApplet(key);
+        });
     </script>
 
     <script>navigator.serviceWorker.register("worker.js");</script>

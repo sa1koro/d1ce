@@ -22,11 +22,11 @@ var js_options = {compress: {drop_console: true,
 
 // Options for minify css.
 var css_options = {maxLineLen: 0,
-	           expandVars: false,
+	           expandVars: true,
 	           uglyComments: false,
 	           cuteComments: false,
 	           convertUrls: '',
-	           debug: false,
+	           debug: true,
 	           output: ''};
 
 // Options for minify svg.
